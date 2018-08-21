@@ -1,6 +1,7 @@
 # Katachi3D
 
 Copyright Bjørn Bredesen, 2013
+E-mail: contact@bjornbredesen.no
 
 
 About
