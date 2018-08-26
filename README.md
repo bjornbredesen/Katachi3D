@@ -25,10 +25,10 @@ Last tested to be working on Ubuntu 16.04 with the following dependencies:
  * PyOpenGL 3.1.0
  * Cython 0.27.3
 
-To install:
+To install on Ubuntu 16.04:
 ```
-sudo apt-get install python2.7
-sudo apt-get install python-wxgtk3.0
+sudo apt-get install python3.5
+pip install -U  -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04  wxPython
 pip install PyOpenGL PyOpenGL_accelerate
 sudo apt-get install cython
 make all
