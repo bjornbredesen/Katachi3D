@@ -526,10 +526,10 @@ class mainFrame(wx.Frame):
 		tb.AddTool(toolId = 24, label = "3D-brush", bitmap = wx.Bitmap(resbase+"brush3D.png",wx.BITMAP_TYPE_PNG), bmpDisabled = wx.NullBitmap, kind = wx.ITEM_RADIO, shortHelp = "3D-brush", longHelp = "3D-brush tool. The brush is a sphere of the specified size. Hold shift to erase. Hold ctrl to pick colours.", clientData = None)
 		self.Bind(wx.EVT_TOOL,self.tool3DBrush,id=24)
 		#
-		tb.AddTool(toolId = 25, label = "2D-fill", bitmap = wx.ArtProvider.GetBitmap(wx.ART_NEW,wx.ART_TOOLBAR,tsize), bmpDisabled = wx.NullBitmap, kind = wx.ITEM_RADIO, shortHelp = "2D-fill", longHelp = "2D-fill tool. Flood fills in two dimensions. Hold shift to erase. Hold ctrl to pick colours.", clientData = None)
+		tb.AddTool(toolId = 25, label = "2D-fill", bitmap = wx.Bitmap(resbase+"fill2D.png",wx.BITMAP_TYPE_PNG), bmpDisabled = wx.NullBitmap, kind = wx.ITEM_RADIO, shortHelp = "2D-fill", longHelp = "2D-fill tool. Flood fills in two dimensions. Hold shift to erase. Hold ctrl to pick colours.", clientData = None)
 		self.Bind(wx.EVT_TOOL,self.tool2DFill,id=25)
 		#
-		tb.AddTool(toolId = 26, label = "3D-fill", bitmap = wx.ArtProvider.GetBitmap(wx.ART_NEW,wx.ART_TOOLBAR,tsize), bmpDisabled = wx.NullBitmap, kind = wx.ITEM_RADIO, shortHelp = "3D-fill", longHelp = "3D-fill tool. Flood fills in three dimensions. Hold shift to erase. Hold ctrl to pick colours.", clientData = None)
+		tb.AddTool(toolId = 26, label = "3D-fill", bitmap = wx.Bitmap(resbase+"fill3D.png",wx.BITMAP_TYPE_PNG), bmpDisabled = wx.NullBitmap, kind = wx.ITEM_RADIO, shortHelp = "3D-fill", longHelp = "3D-fill tool. Flood fills in three dimensions. Hold shift to erase. Hold ctrl to pick colours.", clientData = None)
 		self.Bind(wx.EVT_TOOL,self.tool3DFill,id=26)
 		#
 		tb.ToggleTool(20+self.tool,True)
