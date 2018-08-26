@@ -36,7 +36,7 @@ make all
 
 To run:
 ```
-python Katachi3D.py
+python3 Katachi3D.py
 ```
 
 
