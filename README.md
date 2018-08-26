@@ -20,8 +20,8 @@ The icons provided with this program (see the "res" folder) are the work of Bjø
 Installing
 ----------------
 Last tested to be working on Ubuntu 16.04 with the following dependencies:
- * Python 2.7.12
- * WxPython 3.0.2.0
+ * Python 3.5.2
+ * WxPython 4.0.3
  * PyOpenGL 3.1.0
  * Cython 0.27.3
 
