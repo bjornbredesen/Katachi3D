@@ -23,65 +23,38 @@
 # Dependencies
 from __future__ import division
 import wx
-import os
-from wx import glcanvas
-from OpenGL.GL import *
-"""
-import array
-import wx.lib.colourselect as csel
-import wx.py as py
 import struct
-from wx import glcanvas
-from wx.glcanvas import WX_GL_DEPTH_SIZE
-import OpenGL.platform.glx
-import OpenGL.GL
-#import OpenGL.GLU
-import OpenGL.GLUT
-#from OpenGL.GL import *
-import OpenGL.arrays.ctypesarrays
-import OpenGL.arrays.ctypesparameters
-import OpenGL.arrays.ctypespointers
-import OpenGL.arrays.lists
-import OpenGL.arrays.nones
-import OpenGL.arrays.numbers
-import OpenGL.arrays.strings
-import OpenGL.raw.GL
-import OpenGL.GL
-#import OpenGL.GLU
-import OpenGL.GLUT
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-#from OpenGL.GLU import *
-import time
-"""
 
 # Internal
-from Katachi3Dlib import *
-from project import *
 from extra import *
+from project import *
 from viewportVoxelmapEditor import *
 from viewportVoxelmapOpenGL import *
-from viewportContainer import *
 from layerWindow import *
 from propertiesWindow import *
-from mainWindow import *
+from viewportContainer import *
 
 
 #####################################################
-# Entry
+# Edit history
 
-print("------------------------------------------------------")
-print("\tKatachi3D")
-print("\tBy Bjørn Bredesen, 2013")
-print("\tE-mail: contact@bjornbredesen.no")
-print("------------------------------------------------------")
-print("Please see 'About' for instructions.")
-print("------------------------------------------------------")
+class EHProject:
+	def __init__(self,prj):
+		self.prj=prj.clone()
+		prj.generated=False
+	def use(self,parentwin):
+		ret=EHProject(parentwin.prj)
+		parentwin.setProject(self.prj)
+		return ret
 
-project=voxelImage(20,32,20)
-project.newLayer("Layer 1")
-
-app=wx.App(False)
-frame=mainFrame(project)
-app.MainLoop()
+class EHLayer:
+	def __init__(self,layer,index):
+		self.layer=layer.clone()
+		self.li=index
+		layer.generated=False
+	def use(self,parentwin):
+		ret=EHLayer(parentwin.prj.layers[self.li],self.li)
+		parentwin.prj.layers[self.li]=self.layer
+		parentwin.setLayer(self.li)
+		return ret
 

@@ -20,17 +20,16 @@
 #####################################################
 # Katachi3D is a simple voxel graphics editor.
 
-# Dependencies
 from __future__ import division
 import wx
-import os
-from wx import glcanvas
-from OpenGL.GL import *
-"""
 import array
+import os
 import wx.lib.colourselect as csel
 import wx.py as py
 import struct
+#from wx import glcanvas
+#from OpenGL.GL import *
+
 from wx import glcanvas
 from wx.glcanvas import WX_GL_DEPTH_SIZE
 import OpenGL.platform.glx
@@ -52,36 +51,46 @@ import OpenGL.GLUT
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 #from OpenGL.GLU import *
-import time
-"""
 
-# Internal
+import time
+
 from Katachi3Dlib import *
-from project import *
-from extra import *
-from viewportVoxelmapEditor import *
-from viewportVoxelmapOpenGL import *
-from viewportContainer import *
-from layerWindow import *
-from propertiesWindow import *
-from mainWindow import *
 
 
 #####################################################
-# Entry
+# Extra
 
-print("------------------------------------------------------")
-print("\tKatachi3D")
-print("\tBy Bjørn Bredesen, 2013")
-print("\tE-mail: contact@bjornbredesen.no")
-print("------------------------------------------------------")
-print("Please see 'About' for instructions.")
-print("------------------------------------------------------")
+#bgDC=0
+#bgBitmap=0
+def makeBGBitmap(basedc):
+	w=8
+	h=8
+	bgBytes=array.array('B',[0]*w*h*3)
+	for y in range(h):
+		for x in range(w):
+			offset=y*w*3+x*3
+			g=100
+			if (int(x/4)&1) ^ (int(y/4)&1):
+				g=150
+			bgBytes[offset+0]=bgBytes[offset+1]=bgBytes[offset+2]=g
+	dw=1600
+	dh=1200
+	bgBitmap=wx.Bitmap.FromBuffer(w,h,bgBytes)
+	bgDC=wx.MemoryDC(wx.Bitmap(dw, dh, 24))
+	bgDC.Clear()
+	for y in range(int(dh/h)):
+		for x in range(int(dw/w)):
+			bgDC.DrawBitmap(bgBitmap,x*w,y*h)
+	return bgDC
 
-project=voxelImage(20,32,20)
-project.newLayer("Layer 1")
+def DrawTextActive(dc,tname,x,y):
+	dc.SetTextForeground(wx.Colour(0,0,0,wx.ALPHA_OPAQUE))
+	for sx in range (-1,3):
+		for sy in range (-1,2):
+			dc.DrawText(tname,x+sx,y+sy)
+	dc.SetTextForeground(wx.Colour(255,255,255,wx.ALPHA_OPAQUE))
+	dc.DrawText(tname,x,y)
+	dc.DrawText(tname,x+1,y)
 
-app=wx.App(False)
-frame=mainFrame(project)
-app.MainLoop()
+
 

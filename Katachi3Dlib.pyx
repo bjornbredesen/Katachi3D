@@ -67,9 +67,9 @@ def brush3D_cython(arr, cr,cg,cb,ca, axis, arrxSize,arrySize,arrzSize, minX,maxX
 	cdef int _lzp=lzp
 	cdef int _smX=smX
 	cdef int _smXY=_smX*smY
-	for cx in xrange(minX,maxX):
-		for cy in xrange(minY,maxY):
-			for cz in xrange(minZ,maxZ):
+	for cx in range(minX,maxX):
+		for cy in range(minY,maxY):
+			for cz in range(minZ,maxZ):
 				d1=lx-cx
 				d1*=d1
 				df=d1
@@ -137,9 +137,9 @@ def GenerateFromVoxelLayerCythonC(mesh,layer):
 	cdef float cr,cg,cb,ca
 	cdef unsigned int offs
 	
-	for x in xrange(vmxSize):
-		for y in xrange(vmySize):
-			for z in xrange(vmzSize):
+	for x in range(vmxSize):
+		for y in range(vmySize):
+			for z in range(vmzSize):
 				offs=(z*vmxySize+y*vmxSize+x)*4
 				if vm[offs+3]==0:
 					continue
@@ -543,11 +543,11 @@ cdef class Mesh:
 		#
 		GenerateFromVoxelLayerCythonC(self,layer)
 		#
-		print "DBG: Mesh from voxel image layer (cython)"
-		print " - - - time: ",(time.time()-time0)
+		#print("DBG: Mesh from voxel image layer (cython)")
+		#print(" - - - time: ",(time.time()-time0))
 	
 	def postProcess(self):
-		print " - DBG: Post process model"
+		#print(" - DBG: Post process model")
 		if self.layer.renderMode==0:
 			self.CalculateFaceNormals()
 			self.CalculateVertexNormals()
@@ -569,7 +569,7 @@ cdef class Mesh:
 					i.normal=v[i.index].normal
 	
 	def RemoveDoubleVertices(self):
-		print " - DBG: Remove double vertices"
+		#print(" - DBG: Remove double vertices")
 		time0=time.time()
 		v=self.vertices
 		newv=[]
@@ -578,7 +578,7 @@ cdef class Mesh:
 			v1.original=None
 		# Find unique vertices based on positions
 		oi=0
-		for v1i in xrange(0,nv-1):
+		for v1i in range(0,nv-1):
 			v1=v[v1i]
 			if v1.original!=None:
 				continue
@@ -586,7 +586,7 @@ cdef class Mesh:
 			newv.append(v1) # Add to new vertex list
 			oi+=1
 			# Find and mark doubles
-			for v2i in xrange(v1i+1,nv):
+			for v2i in range(v1i+1,nv):
 				v2=v[v2i]
 				if v2.original!=None:
 					continue
@@ -600,25 +600,25 @@ cdef class Mesh:
 					fv=fv.original
 				ind.index=fv.index
 		self.vertices=newv # Use the new vertex list
-		print " - - - time: ",(time.time()-time0)
+		#print(" - - - time: ",(time.time()-time0))
 	
 	def CalculateFaceNormals(self):
-		print " - - DBG: Calculate face normals"
+		#print(" - - DBG: Calculate face normals")
 		time0=time.time()
 		CalculateFaceNormalsCython(self.vertices,self.faces)
-		print " - - - time: ",(time.time()-time0)
+		#print(" - - - time: ",(time.time()-time0))
 	
 	def CalculateVertexNormals(self):
-		print " - - DBG: Calculate vertex normals"
+		#print(" - - DBG: Calculate vertex normals")
 		time0=time.time()
 		v=self.vertices
 		for v1 in v:
 			v1.normal = Vector3D(0,0,0)
 		CalculateVertexNormalsCython(v,self.faces)
-		print " - - - time: ",(time.time()-time0)
+		#print(" - - - time: ",(time.time()-time0))
 
 	def SmoothNormal(self,passes):
-		print " - - DBG: Normal smoothing - ",passes," passes"
+		#print(" - - DBG: Normal smoothing - ",passes," passes")
 		time0=time.time()
 		
 		cdef Vertex v1
@@ -632,11 +632,11 @@ cdef class Mesh:
 			v1.normal = Vector3D(0,0,0)
 		for f in self.faces:
 			ni=len(f.indices)
-			for _i in xrange(ni):
+			for _i in range(ni):
 				v1=v[f.indices[(_i+1)%ni].index]
 				v1.neighbours.add( f.indices[_i%ni].index )
 				v1.neighbours.add( f.indices[(_i+2)%ni].index )
-		for _pass in xrange(passes):
+		for _pass in range(passes):
 			for v1 in v:
 				v1.normal=Vector3D(0,0,0)
 				v1.ox=v1.pos.x
@@ -672,21 +672,21 @@ cdef class Mesh:
 				v1.pos.x -= mproj*v1.normal.x
 				v1.pos.y -= mproj*v1.normal.y
 				v1.pos.z -= mproj*v1.normal.z
-		print " - - - time: ",(time.time()-time0)
-					
+		#print(" - - - time: ",(time.time()-time0))
+		
 	def SmoothPositional(self,passes):
-		print " - - DBG: Positional smoothing - ",passes," passes"
+		#print(" - - DBG: Positional smoothing - ",passes," passes")
 		time0=time.time()
 		v=self.vertices
 		for v1 in v:
 			v1.neighbours=set()
 		for f in self.faces:
 			ni=len(f.indices)
-			for _i in xrange(ni):
+			for _i in range(ni):
 				v1=v[f.indices[(_i+1)%ni].index]
 				v1.neighbours.add( f.indices[_i%ni].index )
 				v1.neighbours.add( f.indices[(_i+2)%ni].index )
-		for _pass in xrange(passes):
+		for _pass in range(passes):
 			for v1 in v:
 				v1.ox=v1.pos.x
 				v1.oy=v1.pos.y
@@ -706,11 +706,12 @@ cdef class Mesh:
 					p.x=tx/nn
 					p.y=ty/nn
 					p.z=tz/nn
-		print " - - - time: ",(time.time()-time0)
+		#print(" - - - time: ",(time.time()-time0))
 	
 	def dbgout(self):
-		print " - - Vertices: ",(len(self.vertices))
-		print " - - Faces: ",(len(self.faces))
+		pass
+		#print(" - - Vertices: ",(len(self.vertices)))
+		#print(" - - Faces: ",(len(self.faces)))
 
 
 cdef extern from "GL/gl.h":
@@ -750,7 +751,8 @@ def renderFlatCython(mdl):
 				glVertex3f(p4.x,p4.y,p4.z)
 				glEnd()
 			else:
-				print "DBG: Invalid face"
+				pass
+				#print("DBG: Invalid face")
 
 def renderLightCython(mdl):
 	cdef Mesh m
@@ -790,6 +792,7 @@ def renderLightCython(mdl):
 				glVertex3f(p4.x,p4.y,p4.z)
 				glEnd()
 			else:
-				print "DBG: Invalid face"
+				pass
+				#print("DBG: Invalid face")
 
 
