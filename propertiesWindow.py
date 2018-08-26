@@ -55,10 +55,13 @@ class propertiesWindow(wx.Window):
 		self.Bind(wx.EVT_TEXT,self.named,self.namer)
 
 		self.layerSizer=wx.StaticBoxSizer(wx.StaticBox(self,label="Layer"),wx.VERTICAL)
-
-		layerSizer=wx.FlexGridSizer(2,20,0,0)
+		
+		#layerSizer=wx.GridSizer(20, 2, 0, 0)
+		layerSizer=wx.FlexGridSizer(20,2,0,0)
+		# Name
 		layerSizer.AddMany([ (wx.StaticText(self,-1,"Name"),2,wx.GROW|wx.ALIGN_CENTER|wx.LEFT|wx.RIGHT|wx.TOP,6), (self.namer,0,wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL,1) ])
 		
+		# Position
 		box=wx.BoxSizer(wx.HORIZONTAL)
 		self.xPoser=wx.SpinCtrl(self,-1,"")
 		self.xPoser.SetRange(-1000,1000)
@@ -74,6 +77,7 @@ class propertiesWindow(wx.Window):
 		box.Add(self.zPoser,1,wx.ALIGN_CENTRE|wx.ALL)
 		layerSizer.AddMany([ (wx.StaticText(self,-1,"Position"),0,wx.GROW|wx.ALIGN_CENTER|wx.LEFT|wx.RIGHT|wx.TOP,6), (box,0,wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL,1) ])
 		
+		# Rendering parameter
 		self.renderModeSetter=wx.ComboBox(self,500,"",choices=[],style=wx.CB_DROPDOWN|wx.CB_READONLY)
 		v=0
 		for i in renderModeNames:
