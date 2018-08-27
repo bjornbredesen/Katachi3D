@@ -80,9 +80,14 @@ class viewportVoxelmapEditor(wx.Window):
 		self.Bind(wx.EVT_KEY_DOWN,self.keydown)
 		self.Bind(wx.EVT_SET_FOCUS,self.sfocus)
 		self.Bind(wx.EVT_KILL_FOCUS,self.kfocus)
+		self.Bind(wx.EVT_MOUSE_CAPTURE_LOST,self.captureLost)
 		self._focus=False
+		self.isCaptured = False
 		#
 		self.changed=False
+		#
+		#self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
+		#self.SetDoubleBuffered(True)
 	
 	def setZ(self,z):
 		self.zInd=z
@@ -94,7 +99,7 @@ class viewportVoxelmapEditor(wx.Window):
 			self._parent.cY=z
 	
 	def RefreshActive(self):
-		self.Refresh()
+		self.Refresh(eraseBackground=False)
 	
 	def setProject(self,prj):
 		self.prj=prj
@@ -169,10 +174,12 @@ class viewportVoxelmapEditor(wx.Window):
 			self._parent.caxis=None
 			self._parent.RefreshClientsActive()
 		else:
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 	
 	def leftclick(self,evt):
-		self.CaptureMouse()
+		if not self.isCaptured:
+			self.CaptureMouse()
+			self.isCaptured = True
 		pos=evt.GetPosition()
 		self.clkL=True
 		self.clkMode=0
@@ -308,8 +315,13 @@ class viewportVoxelmapEditor(wx.Window):
 		else:
 			return False
 	
+	def captureLost(self,evt):
+		self.isCaptured = False
+	
 	def leftunclick(self,evt):
-		self.ReleaseMouse()
+		if self.isCaptured:
+			self.ReleaseMouse()
+			self.isCaptured = False
 		pos=evt.GetPosition()
 		self.clkL=False
 		if self._parent._parent.tool==0 and self.clkMode==0:
@@ -337,10 +349,10 @@ class viewportVoxelmapEditor(wx.Window):
 			self.zoom*=1+d*0.001
 			self.xScroll*=self.zoom/pzoom
 			self.yScroll*=self.zoom/pzoom
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		elif wx.GetKeyState(wx.WXK_SHIFT):
 			self.xScroll-=d*0.2
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		elif wx.GetKeyState(wx.WXK_ALT):
 			self.setZ(max(min(int(self.zInd-d*0.01),self.getProjectLimits()[2]-1),0))
 			if self._parent._parent.tool==0 and self.clkMode==0 and self.clkL:
@@ -350,7 +362,7 @@ class viewportVoxelmapEditor(wx.Window):
 				self._parent.RefreshClientsActive()
 		else:
 			self.yScroll-=d*0.2
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 	
 	def updateSelRect(self):
 		plimits=self.getProjectLimits()
@@ -485,13 +497,13 @@ class viewportVoxelmapEditor(wx.Window):
 			self.zoom*=1.5
 			self.xScroll*=self.zoom/pzoom
 			self.yScroll*=self.zoom/pzoom
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		elif kc==wx.WXK_NUMPAD_SUBTRACT:
 			pzoom=self.zoom
 			self.zoom/=1.5
 			self.xScroll*=self.zoom/pzoom
 			self.yScroll*=self.zoom/pzoom
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		elif kc==wx.WXK_PAGEDOWN:
 			self.setZ(max(min(self.zInd+1,limits[2]-1),0))
 			self._parent.RefreshClientsActive()
@@ -499,7 +511,7 @@ class viewportVoxelmapEditor(wx.Window):
 				self.czb=self.zInd
 				self.updateSelRect()
 			else:
-				self.Refresh()
+				self.Refresh(eraseBackground=False)
 		elif kc==wx.WXK_PAGEUP:
 			self.setZ(max(self.zInd-1,0))
 			self._parent.RefreshClientsActive()
@@ -507,29 +519,29 @@ class viewportVoxelmapEditor(wx.Window):
 				self.czb=self.zInd
 				self.updateSelRect()
 			else:
-				self.Refresh()
+				self.Refresh(eraseBackground=False)
 		elif kc==wx.WXK_RIGHT:
 			self.xScroll+=25
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		elif kc==wx.WXK_LEFT:
 			self.xScroll-=25
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		elif kc==wx.WXK_DOWN:
 			self.yScroll+=25
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		elif kc==wx.WXK_UP:
 			self.yScroll-=25
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		
 	def resize(self,evt):
 		size=evt.GetSize()
 		self.xSize=size.x
 		self.ySize=size.y
-		self.Refresh()
+		self.Refresh(eraseBackground=False)
 		
 	def repaint(self,evt):
 		try:
-			self.draw(wx.AutoBufferedPaintDCFactory(self))
+			self.draw(wx.BufferedPaintDC(self))
 		except wx._core.wxAssertionError as e:
 			print('Exception: ' + str(e))
 	
@@ -599,11 +611,16 @@ class viewportVoxelmapEditor(wx.Window):
 	def draw(self,dc=None):
 		if not dc:
 			try:
-				dc = wx.AutoBufferedPaintDCFactory(self)
+				dc = wx.BufferedPaintDC(self)
 			except wx._core.wxAssertionError as e:
 				#print('Exception: ' + str(e))
 				return
 		dc.SetFont(self.font)
+		#
+		c=wx.SystemSettings.GetColour(wx.SYS_COLOUR_MENU)
+		dc.SetPen(wx.Pen(c,1))
+		dc.SetBrush(wx.Brush(c))
+		dc.DrawRectangle(0,0,self.xSize,self.ySize)
 		#
 		zoom=self.zoom
 		dc.SetPen(wx.Pen(wx.Colour('black'),1))

@@ -71,6 +71,7 @@ class paneWin(wx.Window):
 		self.Bind(wx.EVT_LEFT_DOWN,self.leftclick)
 		self.Bind(wx.EVT_LEFT_UP,self.leftunclick)
 		self.Bind(wx.EVT_MOTION,self.motion)
+		self.Bind(wx.EVT_MOUSE_CAPTURE_LOST,self.captureLost)
 	
 	def setOpenClient(self,cn):
 		if cn==self.openClient:
@@ -118,6 +119,9 @@ class paneWin(wx.Window):
 				self.setOpenClient(self.overClient)
 		self.resizing=False
 		self.updateOver(evt)
+	
+	def captureLost(self,evt):
+		self.isCaptured = False
 	
 	def motion(self,evt):
 		if self.resizing:
@@ -202,7 +206,7 @@ class paneWin(wx.Window):
 
 	def repaint(self,evt):
 		try:
-			self.draw(wx.AutoBufferedPaintDCFactory(self))
+			self.draw(wx.BufferedPaintDC(self))
 		except wx._core.wxAssertionError as e:
 			print('Exception: ' + str(e))
 	
@@ -224,10 +228,16 @@ class paneWin(wx.Window):
 	def draw(self,dc=None):
 		if not dc:
 			try:
-				dc = wx.AutoBufferedPaintDCFactory(self)
+				dc = wx.BufferedPaintDC(self)
 			except wx._core.wxAssertionError as e:
 				#print('Exception: ' + str(e))
 				return
+		#
+		c=wx.SystemSettings.GetColour(wx.SYS_COLOUR_MENU)
+		dc.SetPen(wx.Pen(c,1))
+		dc.SetBrush(wx.Brush(c))
+		dc.DrawRectangle(0,0,self.xSize,self.ySize)
+		#
 		dc.SetFont(self.font)
 		if self.openClient!=-1:
 			dc.SetPen(wx.Pen(wx.Colour('black'),1))
@@ -537,6 +547,7 @@ class mainFrame(wx.Frame):
 		self.colSelect=csel.ColourSelect(tb,-1,"",self.penColour)
 		self.Bind(csel.EVT_COLOURSELECT,self.colourSelect,self.colSelect)
 		tb.AddControl( self.colSelect )
+		tb.Realize()
 		
 		# Panes
 		self.leftPane=paneWin(self,self,-1,0,200)

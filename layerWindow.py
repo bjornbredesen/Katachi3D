@@ -105,18 +105,18 @@ def drawIsometric(vMap,dc,x,y,w,h,zoom,drawX,drawY,drawZ):
 					if dx:
 						colL=[ min(r*1.1+20,255),min(g*1.1+20,255),min(b*1.1+20,255) ]
 						dc.SetPen(wx.Pen(wx.Colour( colL[0],colL[1],colL[2] ),1))
-						dc.SetBrush(wx.Brush(wx.Colour( colL[0],colL[1],colL[2] ),1))
+						dc.SetBrush(wx.Brush(wx.Colour( colL[0],colL[1],colL[2] )))
 						dc.DrawPolygon([ [p1[0],p1[1]], [p2[0],p2[1]], [p3[0],p3[1]], [p4[0],p4[1]] ])
 					if dy:
 						p7 = [(x-z)*2*zoom+xC,(x+z+sy)*zoom+yC]
 						dc.SetPen(wx.Pen(wx.Colour( r,g,b ),1))
-						dc.SetBrush(wx.Brush(wx.Colour( r,g,b ),1))
+						dc.SetBrush(wx.Brush(wx.Colour( r,g,b )))
 						dc.DrawPolygon([ [p1[0],p1[1]], [p7[0],p7[1]], [p5[0],p5[1]], [p2[0],p2[1]] ])
 					if dz:
 						colD=[ max(r*0.9-20,0),max(g*0.9-20,0),max(b*0.9-20,0) ]
 						p6 = [(x-z-1)*2*zoom+xC,(x+z+1+sy2)*zoom+yC]
 						dc.SetPen(wx.Pen(wx.Colour( colD[0],colD[1],colD[2] ),1))
-						dc.SetBrush(wx.Brush(wx.Colour( colD[0],colD[1],colD[2] ),1))
+						dc.SetBrush(wx.Brush(wx.Colour( colD[0],colD[1],colD[2] )))
 						dc.DrawPolygon([ [p2[0],p2[1]], [p5[0],p5[1]], [p6[0],p6[1]], [p3[0],p3[1]] ])
 	#
 #####################################################
@@ -274,12 +274,12 @@ class layerWindow(wx.Window):
 		size=evt.GetSize()
 		self.xSize=size.x
 		self.ySize=size.y
-		self.Refresh()
+		self.Refresh(eraseBackground=False)
 		self.draw()
 
 	def repaint(self,evt):
 		try:
-			self.draw(wx.AutoBufferedPaintDCFactory(self))
+			self.draw(wx.BufferedPaintDC(self))
 		except wx._core.wxAssertionError as e:
 			print('Exception: ' + str(e))
 	
@@ -289,10 +289,16 @@ class layerWindow(wx.Window):
 	def draw(self,dc=None):
 		if not dc:
 			try:
-				dc = wx.AutoBufferedPaintDCFactory(self)
+				dc = wx.BufferedPaintDC(self)
 			except wx._core.wxAssertionError as e:
 				#print('Exception: ' + str(e))
 				return
+		#
+		c=wx.SystemSettings.GetColour(wx.SYS_COLOUR_MENU)
+		dc.SetPen(wx.Pen(c,1))
+		dc.SetBrush(wx.Brush(c))
+		dc.DrawRectangle(0,0,self.xSize,self.ySize)
+		#
 		dc.SetFont(self.font)
 		i=0
 		for l in self.prj.layers:

@@ -60,7 +60,7 @@ from project import *
 class viewportVoxelmapOpenGL(glcanvas.GLCanvas):
 	def __init__(self,parent,ID,prj,zoom=8):
 		#glcanvas.GLCanvas.__init__(self,parent,attribList=(glcanvas.WX_GL_RGBA, glcanvas.WX_GL_DOUBLEBUFFER))
-		glcanvas.GLCanvas.__init__(self, parent, -1,attribList=[glcanvas.WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE,16,0,0])
+		glcanvas.GLCanvas.__init__(self, parent, -1,attribList=[glcanvas.WX_GL_RGBA, glcanvas.WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE,16,0,0])
 		self.context = glcanvas.GLContext(self)
 		self.init=False
 		self.mdl=None
@@ -115,7 +115,7 @@ class viewportVoxelmapOpenGL(glcanvas.GLCanvas):
 		pos=evt.GetPosition()
 		self.xRot = self.xRotA + (pos.x-self.xclkA)*0.2
 		self.yRot = self.yRotA + (pos.y-self.yclkA)*0.2
-		self.Refresh()
+		self.Refresh(eraseBackground=False)	
 	
 	def setProject(self,prj):
 		self.prj=prj
@@ -133,25 +133,25 @@ class viewportVoxelmapOpenGL(glcanvas.GLCanvas):
 		
 	def sfocus(self,evt):
 		self._focus=True
-		self.Refresh()
+		self.Refresh(eraseBackground=False)
 	def kfocus(self,evt):
 		self._focus=False
-		self.Refresh()
+		self.Refresh(eraseBackground=False)
 	
 	def RefreshActive(self):
-		self.Refresh()
+		self.Refresh(eraseBackground=False)
 	
 	def wheel(self,evt):
 		d=evt.GetWheelRotation()
 		if wx.GetKeyState(wx.WXK_CONTROL):
 			self.zScroll-=d*0.01
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		elif wx.GetKeyState(wx.WXK_SHIFT):
 			self.xScroll-=d*0.01
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		else:
 			self.yScroll-=d*0.01
-			self.Refresh()
+			self.Refresh(eraseBackground=False)
 		
 	def keydown(self,evt):
 		if self._parent.childKeyDown(evt):
@@ -181,7 +181,7 @@ class viewportVoxelmapOpenGL(glcanvas.GLCanvas):
 		self.xSize=size.x
 		self.ySize=size.y
 		self.init=False
-		self.Refresh()
+		self.Refresh(eraseBackground=False)
 		
 	def repaint(self,evt):
 		if self.drawing:
@@ -192,8 +192,8 @@ class viewportVoxelmapOpenGL(glcanvas.GLCanvas):
 		if not self.mdl or self.drawing:
 			return
 		self.drawing=True
-		glFlush()
 		self.SetCurrent(self.context)
+		glFlush()
 		if not self.init:
 			self.init=True
 			glViewport(0,0,self.xSize,self.ySize)
@@ -220,8 +220,7 @@ class viewportVoxelmapOpenGL(glcanvas.GLCanvas):
 			glLightfv(GL_LIGHT0,GL_LINEAR_ATTENUATION,(0.02))
 			glLightfv(GL_LIGHT0,GL_POSITION,(-self.prj.xSize,-self.prj.ySize,-self.prj.zSize,-18.0))
 		
-		
-		#c=wx.SystemSettings.GetColour(wx.SYS_COLOUR_BACKGROUND)
+		#c=wx.SystemSettings.GetColour(wx.SYS_COLOUR_MENU)
 		#glClearColor(c[0]/256.,c[1]/256.,c[2]/256.,0)
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 		glDisable(GL_CULL_FACE)
@@ -242,7 +241,7 @@ class viewportVoxelmapOpenGL(glcanvas.GLCanvas):
 			glEnable(GL_LIGHT0)
 		else:
 			glDisable(GL_LIGHTING)
-		
+		#################################
 		if self.calllist and self.calllistm!=self._parent._parent.useLight:
 			glDeleteLists(self.calllist,1)
 			self.calllist=None
@@ -263,7 +262,7 @@ class viewportVoxelmapOpenGL(glcanvas.GLCanvas):
 			
 		if self.calllist:
 			glCallList(self.calllist)
-		
+		#################################
 		glDisable(GL_LIGHTING)
 		glColor4f(0,0,0,0.1)
 		glBegin(GL_LINES)

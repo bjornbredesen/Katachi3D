@@ -21,6 +21,9 @@
 # The procedures here are to be compiled with Cython.
 # This is due to the need for low-level memory access for reasonable performance.
 
+cdef extern from 'windows.h':
+	pass
+
 import cython
 from libc.math cimport sqrt
 import array

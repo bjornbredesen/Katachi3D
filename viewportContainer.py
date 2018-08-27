@@ -251,7 +251,7 @@ class viewportContainer(wx.Window):
 	def RefreshClients(self):
 		for x in self.clients:
 			if x!=0:
-				x.Refresh()
+				x.Refresh(eraseBackground=False)
 	
 	def sizeupd(self):
 		xs=self.xSize
