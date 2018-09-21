@@ -26,34 +26,6 @@ import wx
 import os
 from wx import glcanvas
 from OpenGL.GL import *
-"""
-import array
-import wx.lib.colourselect as csel
-import wx.py as py
-import struct
-from wx import glcanvas
-from wx.glcanvas import WX_GL_DEPTH_SIZE
-import OpenGL.platform.glx
-import OpenGL.GL
-#import OpenGL.GLU
-import OpenGL.GLUT
-#from OpenGL.GL import *
-import OpenGL.arrays.ctypesarrays
-import OpenGL.arrays.ctypesparameters
-import OpenGL.arrays.ctypespointers
-import OpenGL.arrays.lists
-import OpenGL.arrays.nones
-import OpenGL.arrays.numbers
-import OpenGL.arrays.strings
-import OpenGL.raw.GL
-import OpenGL.GL
-#import OpenGL.GLU
-import OpenGL.GLUT
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-#from OpenGL.GLU import *
-import time
-"""
 
 # Internal
 from Katachi3Dlib import *

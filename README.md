@@ -34,6 +34,8 @@ sudo apt-get install cython
 make all
 ```
 
+Or use the binaries, if they are compatible with your system.
+
 To run:
 ```
 python3 Katachi3D.py
